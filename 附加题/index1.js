@@ -34,6 +34,7 @@ var server = http.createServer(function (request, response) {
     } else {
         if (path === '/xxx') {
             response.setHeader('Content-Type', 'text/html;charset=utf-8')
+            //第38行-44行获取响应内容
             let body = [];
             request.on('error', (err) => {
                 console.error(err);
@@ -89,4 +90,4 @@ var server = http.createServer(function (request, response) {
 })
 
 server.listen(port)
-console.log('监听 ' + port + ' 成功，请用在空中转体720度然后用电饭煲打开 http://localhost:' + port)
+console.log('监听 ' + port + ' 成功，请用浏览器打开 http://localhost:' + port)

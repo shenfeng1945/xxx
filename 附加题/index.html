@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<style>
+    .errorsMessage {
+        display: none;
+    }
+
+    .error {
+        border-color: red;
+    }
+
+    .error+span.errorsMessage {
+        color: red;
+        display: inline;
+    }
+    .ID{
+        width:200px;text-align:center;margin:50px auto 0;color:red;
+    }
+</style>
+
+<body>
+    <form action="/xxx" method="POST" id='loginForm'>
+        <div>
+            <label>
+             账号：
+             <input id="yyy" type="text" name="username">
+             <span class="errorsMessage"></span>
+         </label>
+        </div>
+        <div>
+            <label>
+                密码：
+                <input id="zzz" type="password" name="password">
+                <span class="errorsMessage"></span>
+            </label>
+        </div>
+        <div>
+            <input type="submit">
+        </div>
+    </form>
+    <div class="ID">
+      <p>账号：lzc</p>
+      <p>密码：1314</p>
+    </div>
+</body>
+<script>
+    loginForm.addEventListener('submit', function (e) {
+        e.preventDefault()
+        let request = new XMLHttpRequest()
+        let yyy = loginForm.yyy.value
+        let zzz = loginForm.zzz.value
+        //每次提交前清空错误提示
+        $('input[name="username"]').removeClass('error')
+        $('input[name="password"]').removeClass('error')
+        //标记作用
+        let valid = true
+        //前端验证(52行-66行) 账号和密码同时得写内容，否则不创建请求
+        //账号验证
+        if(yyy.trim() === ''){
+           $('input[name="username"]').addClass('error')
+           .next('span').text('用户名不能为空')
+           valid = false
+        }
+        //密码验证
+        if(zzz === ''){
+           $('input[name="password"]').addClass('error')
+           .next('span').text('密码不能为空')
+           valid = false
+        }
+        if(valid === false){
+            return 
+        }
+        request.onreadystatechange = function () {
+            if (request.readyState === 4) {
+                //如果用户账号和密码都正确(状态码为200)，而我们后端的响应内容并不是JSON格式的字符串，
+                //这种JS字符串不能转化为JSON格式的对象
+                if (request.status >= 400) {
+                    //  console.log( typeof request.response)  控制台打出是字符串
+                    //把字符串变成对象,{errors}是ES6新语法
+                    let { error } = JSON.parse(request.response)
+                    $.each(error, function (item) {
+                        //  将错误信息与CSS选择器关联来控制HTML的错误提示
+                        $(`input[name="${item}"]`).addClass('error')
+                            .next('span').text(error[item])
+                    })
+                }else{
+                    alert('登陆成功')
+                }
+            }
+        }
+        request.open('POST', loginForm.action)
+        request.send(`username=${yyy}&password=${zzz}`)
+
+    })
+
+</script>
+
+</html>
